@@ -23,7 +23,8 @@ Router::connect('/li3_perf/tail/{:file}/{:lines}', array('lines' => 25, 'file' =
 	// echo `tail -n 50 /var/log/php-fpm/www-error.log | ccze -h`;
 
 	$options = '-n ' . $lines;
-	$command = 'tail ' . $options . ' ' . $logfile . ' | ccze -h';
+	$use_ccze = shell_exec('which ccze') ? ' | ccze -h ' : '';
+	$command = 'tail ' . $options . ' ' . $logfile . ' 2>/dev/null ' . $use_ccze;
 	$output = shell_exec($command);
 
 	if($output == null) {
