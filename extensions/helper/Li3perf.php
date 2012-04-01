@@ -5,16 +5,29 @@ class Li3perf extends \lithium\template\helper\Html {
 
 	public function printVars($var) {
 		$html = "<pre>";
-
-		if (@is_array($var)) {
-			$html .= var_dump($var);
-		} else {
-			$html .= $var;
-		}
+		try {
+			if (@is_array($var)) {
+				$html .= $this->dumpVar($var);
+			} else if (@is_object($var)) {
+				$html .= method_exists($var, '__toString') ? $var : $this->dumpVar($var);
+			} else {
+				$html .= $var;
+			}
+		} catch (\Exception $e) { $html .= '<<UNPRINTABLE>>'; }
 
 		$html .= "</pre>";
 
 		return $html;
+	}
+
+	/**
+	 * Helper to dump a variable to a string
+	 * @param mixed $var The variable you want to dump
+	*/
+	public function dumpVar($var) {
+		ob_start();
+		var_dump($var);
+		return ob_get_clean();
 	}
 
 	/**
